@@ -201,4 +201,10 @@ final class AreaEffectCloudBoneEntity extends GenericBoneEntity {
                 new SetPassengersPacket(getEntityId(), Collections.singletonList(this.armorstand.getEntityId()))
         ));
     }
+
+    @Override
+    public void setAutoViewable(boolean autoViewable) {
+        super.setAutoViewable(autoViewable);
+        this.armorstand.setAutoViewable(autoViewable);
+    }
 }
