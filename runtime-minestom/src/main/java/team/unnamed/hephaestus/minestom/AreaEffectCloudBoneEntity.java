@@ -105,6 +105,8 @@ final class AreaEffectCloudBoneEntity extends GenericBoneEntity {
         // set helmet with custom model data from our bone
         armorstand.setHelmet(BASE_HELMET.withMeta(itemMeta ->
                 itemMeta.customModelData(bone.customModelData())));
+
+        armorstand.setAutoViewable(false);
     }
 
     /**
@@ -205,6 +207,8 @@ final class AreaEffectCloudBoneEntity extends GenericBoneEntity {
     @Override
     public void setAutoViewable(boolean autoViewable) {
         super.setAutoViewable(autoViewable);
-        this.armorstand.setAutoViewable(autoViewable);
+        if (this.armorstand != null) {
+            this.armorstand.setAutoViewable(autoViewable);
+        }
     }
 }
