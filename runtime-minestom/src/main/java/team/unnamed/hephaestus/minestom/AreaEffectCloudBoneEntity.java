@@ -185,7 +185,7 @@ final class AreaEffectCloudBoneEntity extends GenericBoneEntity {
 
     @Override
     public @NotNull CompletableFuture<Void> teleport(@NotNull Pos position, long @Nullable [] chunks) {
-        this.armorstand.teleport(position, chunks).join();
+        this.armorstand.setView(position.yaw(), position.pitch());
         return super.teleport(position.sub(0, offset, 0), chunks);
     }
 
