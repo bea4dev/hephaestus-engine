@@ -211,4 +211,10 @@ final class AreaEffectCloudBoneEntity extends GenericBoneEntity {
             this.armorstand.setAutoViewable(autoViewable);
         }
     }
+
+    @Override
+    public void kill() {
+        this.armorstand.kill();
+        super.kill();
+    }
 }

@@ -227,4 +227,11 @@ public class ModelEntity
                 });
     }
 
+    @Override
+    public void kill() {
+        for (GenericBoneEntity bone : bones.values()) {
+            bone.kill();
+        }
+        super.kill();
+    }
 }
