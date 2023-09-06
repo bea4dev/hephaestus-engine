@@ -187,21 +187,22 @@ public class ModelEntity
     private void teleportBone(
             double yawRadians,
             Bone bone,
-            Vector3Float parentPosition
+            Vector3Float parentPosition,
+            Pos teleportPosition
     ) {
         Vector3Float position = bone.position().add(parentPosition);
         Vector3Float rotatedPosition = Vectors.rotateAroundY(position, yawRadians);
         Entity entity = bones.get(bone.name());
 
         if (entity != null) {
-            entity.teleport(super.position.add(
+            entity.teleport(teleportPosition.add(
                     rotatedPosition.x(),
                     rotatedPosition.y(),
                     rotatedPosition.z()
             )).join();
         }
         for (Bone child : bone.children()) {
-            this.teleportBone(yawRadians, child, position);
+            this.teleportBone(yawRadians, child, position, teleportPosition);
         }
     }
 
@@ -218,13 +219,11 @@ public class ModelEntity
 
     @Override
     public @NotNull CompletableFuture<Void> teleport(@NotNull Pos position) {
-        return super.teleport(position)
-                .thenRun(() -> {
-                    double yawRadians = Math.toRadians(position.yaw());
-                    for (Bone bone : model.bones()) {
-                        teleportBone(yawRadians, bone, Vector3Float.ZERO);
-                    }
-                });
+        double yawRadians = Math.toRadians(position.yaw());
+        for (Bone bone : model.bones()) {
+            teleportBone(yawRadians, bone, Vector3Float.ZERO, position);
+        }
+        return super.teleport(position);
     }
 
     @Override
