@@ -217,11 +217,4 @@ final class AreaEffectCloudBoneEntity extends GenericBoneEntity {
         this.armorstand.kill();
         super.kill();
     }
-
-    @SuppressWarnings("UnstableApiUsage")
-    @Override
-    public void refreshPosition(@NotNull Pos newPosition, boolean ignoreView) {
-        this.armorstand.refreshPosition(newPosition, ignoreView);
-        super.refreshPosition(newPosition, ignoreView);
-    }
 }
