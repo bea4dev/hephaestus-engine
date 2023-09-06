@@ -184,25 +184,32 @@ public class ModelEntity
         }
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     private void teleportBone(
             double yawRadians,
             Bone bone,
             Vector3Float parentPosition,
-            Pos teleportPosition
+            Pos teleportPosition,
+            boolean isRefresh
     ) {
         Vector3Float position = bone.position().add(parentPosition);
         Vector3Float rotatedPosition = Vectors.rotateAroundY(position, yawRadians);
         Entity entity = bones.get(bone.name());
 
         if (entity != null) {
-            entity.teleport(teleportPosition.add(
+            Pos pos = teleportPosition.add(
                     rotatedPosition.x(),
                     rotatedPosition.y(),
                     rotatedPosition.z()
-            )).join();
+            );
+            if (isRefresh) {
+                entity.refreshPosition(pos);
+            } else {
+                entity.teleport(pos).join();
+            }
         }
         for (Bone child : bone.children()) {
-            this.teleportBone(yawRadians, child, position, teleportPosition);
+            this.teleportBone(yawRadians, child, position, teleportPosition, isRefresh);
         }
     }
 
@@ -221,7 +228,7 @@ public class ModelEntity
     public @NotNull CompletableFuture<Void> teleport(@NotNull Pos position) {
         double yawRadians = Math.toRadians(position.yaw());
         for (Bone bone : model.bones()) {
-            teleportBone(yawRadians, bone, Vector3Float.ZERO, position);
+            teleportBone(yawRadians, bone, Vector3Float.ZERO, position, false);
         }
         return super.teleport(position);
     }
@@ -232,5 +239,15 @@ public class ModelEntity
             bone.kill();
         }
         super.kill();
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    @Override
+    public void refreshPosition(@NotNull Pos newPosition, boolean ignoreView) {
+        double yawRadians = Math.toRadians(newPosition.yaw());
+        for (Bone bone : model.bones()) {
+            teleportBone(yawRadians, bone, Vector3Float.ZERO, newPosition, true);
+        }
+        super.refreshPosition(newPosition, ignoreView);
     }
 }
