@@ -57,13 +57,13 @@ public class ModelEntity
     private final Map<String, GenericBoneEntity> bones = new ConcurrentHashMap<>();
     private final AnimationController animationController;
 
-    private final Supplier<GenericBoneEntity> boneEntityProvider;
+    private final BoneEntitySupplier boneEntityProvider;
 
     public ModelEntity(
             EntityType type,
             Model model,
             BoneType boneType,
-            Supplier<GenericBoneEntity> boneEntityProvider
+            BoneEntitySupplier boneEntityProvider
     ) {
         super(type);
         this.model = model;
@@ -107,7 +107,7 @@ public class ModelEntity
     private void createBone(Bone bone) {
         GenericBoneEntity entity;
         if (boneType == BoneType.CUSTOM) {
-            entity = boneEntityProvider.get();
+            entity = boneEntityProvider.get(this, bone);
         } else {
             entity = boneType == BoneType.ARMOR_STAND
                     ? new BoneEntity(this, bone)
@@ -250,5 +250,10 @@ public class ModelEntity
             bone.kill();
         }
         super.kill();
+    }
+
+    @FunctionalInterface
+    public static interface BoneEntitySupplier {
+        GenericBoneEntity get(ModelEntity entity, Bone bone);
     }
 }
