@@ -37,6 +37,6 @@ public abstract class GenericBoneEntity extends EntityCreature implements BaseBo
         setAutoViewable(false);
     }
 
-    abstract void colorize(Color color);
+    protected abstract void colorize(Color color);
 
 }
