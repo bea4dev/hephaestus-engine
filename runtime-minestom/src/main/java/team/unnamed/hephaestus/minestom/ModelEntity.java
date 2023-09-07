@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 public class ModelEntity
         extends EntityCreature
@@ -56,10 +57,13 @@ public class ModelEntity
     private final Map<String, GenericBoneEntity> bones = new ConcurrentHashMap<>();
     private final AnimationController animationController;
 
+    private final Supplier<GenericBoneEntity> boneEntityProvider;
+
     public ModelEntity(
             EntityType type,
             Model model,
-            BoneType boneType
+            BoneType boneType,
+            Supplier<GenericBoneEntity> boneEntityProvider
     ) {
         super(type);
         this.model = model;
@@ -67,10 +71,19 @@ public class ModelEntity
         this.animationController = boneType == BoneType.ARMOR_STAND
                 ? AnimationController.create(this)
                 : AnimationController.nonDelayed(this);
+        this.boneEntityProvider = boneEntityProvider;
 
         // model entity is not auto-viewable by default
         super.setAutoViewable(false); // "super" so it doesn't call our override
         initialize();
+    }
+
+    public ModelEntity(
+            EntityType type,
+            Model model,
+            BoneType boneType
+    ) {
+        this(type, model, boneType, null);
     }
 
     public ModelEntity(
@@ -92,10 +105,15 @@ public class ModelEntity
     }
 
     private void createBone(Bone bone) {
-        bones.put(bone.name(), boneType == BoneType.ARMOR_STAND
-                ? new BoneEntity(this, bone)
-                : new AreaEffectCloudBoneEntity(this, bone)
-        );
+        GenericBoneEntity entity;
+        if (boneType == BoneType.CUSTOM) {
+            entity = boneEntityProvider.get();
+        } else {
+            entity = boneType == BoneType.ARMOR_STAND
+                    ? new BoneEntity(this, bone)
+                    : new AreaEffectCloudBoneEntity(this, bone);
+        }
+        bones.put(bone.name(), entity);
         for (Bone child : bone.children()) {
             createBone(child);
         }

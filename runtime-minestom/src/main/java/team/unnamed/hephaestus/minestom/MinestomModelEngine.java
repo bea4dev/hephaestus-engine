@@ -77,7 +77,8 @@ public final class MinestomModelEngine implements ModelEngine<Player, MinestomLo
 
     public enum BoneType {
         ARMOR_STAND,
-        AREA_EFFECT_CLOUD
+        AREA_EFFECT_CLOUD,
+        CUSTOM
     }
 
     public static MinestomModelEngine minestom() {
